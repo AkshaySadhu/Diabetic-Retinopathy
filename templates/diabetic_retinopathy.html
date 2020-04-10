@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DR</title>
+</head>
+<body>
+{% include 'navbar.html' %}
+{% if predicted %}
+{% for i in result %}
+Patient ID:{{i.patient_id_id}}<br>
+Retina image path:{{i.retina_photo_path}}<br>
+Predicted Category:{{i.predicted_stage}}<br>
+Confirmation percentage:{{i.confirmation}}<br>
+{% endfor %}
+{% else %}
+<h2>Diabetic Retinopathy form</h2>
+<h4>Patient_id: {{id}}</h4>
+<form action="/addDR/{{id}}/predict" method="POST">
+    {% csrf_token %}
+<table>
+    <h3>Enter Retina image photo path:</h3>{{form.retina_photo_path}}
+</table>
+    <input type="submit" value="Predict">
+</form>
+{% endif %}
+</body>
+</html>

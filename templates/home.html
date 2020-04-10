@@ -1,0 +1,12 @@
+{% include 'navbar.html' %}
+<div><h2>Search Patient</h2></div>
+<div>
+    <form action="/search" method="POST">
+        {% csrf_token %}
+        <input type="text" name="pid" placeholder="Enter patient ID">
+        OR
+        <input type="number" name="phno" placeholder="Enter patient phone number">
+        <input type="submit" value="Search">
+
+    </form>
+</div>

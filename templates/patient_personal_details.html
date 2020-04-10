@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DR</title>
+</head>
+<body>
+{% include 'navbar.html' %}
+<h2>Patient Personal Details</h2>
+<table>
+    {% for personal in ppd %}
+    <tr><th>Patient_ID:</th><td>{{personal.patient_id}}</td></tr>
+    <tr><th>Name:</th><td>{{personal.patient_name}}</td></tr>
+    <tr><th>Age:</th><td>{{personal.patient_age}}</td></tr>
+    <tr><th>Gender:</th><td>{{personal.gender}}</td></tr>
+    <tr><th>PH.No</th><td>{{personal.phone_no}}</td></tr>
+    <tr><th>Blood Group</th><td>{{personal.blood_group}}</td></tr>
+    <tr><th>photo_file_path</th><td>{{personal.patient_photo_file_path}}</td></tr>
+    <tr><th>address</th><td>{{personal.address}}</td></tr>
+    {% endfor %}
+</table>
+<h2>Patient Diabeties History</h2>
+<table>
+    {% for history in pdh %}
+    <tr><th>Diabetic Type:</th><td>{{history.diabetic_type}}</td></tr>
+    <tr><th>Sugar Fasting Value</th><td>{{history.sugar_Fasting_value}}</td></tr>
+    <tr><th>Sugar Non Fasting Value</th><td>{{history.sugar_Non_fasting_value}}</td></tr>
+    <tr><th>Duration of Diabeties</th><td>{{history.time_duration}}</td></tr>
+    <tr><th>diabeties_report_path</th><td>{{history.diab_report_path}}</td></tr>
+    {% endfor %}
+</table>
+<br>
+{% if status %}
+<h2>Diabetic Retinopathy Details</h2>
+<table>
+    {% for i in dr %}
+    <tr><th>Retina photo path</th><td>{{i.retina_photo_path}}</td></tr>
+    <tr><th>Predicted stage</th><td>{{i.predicted_stage}}</td></tr>
+    <tr><th>Confirmation Percentage</th><td>{{i.confirmation}}</td></tr>
+    {% endfor %}
+</table>
+<a href= ""><button>Print</button></a>
+{% else %}
+{% for x in ppd %}
+<a href= "addDR/{{x.patient_id}}"><button>Add Retina image</button></a>
+{% endfor %}
+{% endif %}
+</body>
+</html>
