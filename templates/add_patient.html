@@ -6,7 +6,7 @@
 </head>
 <body>
 <div>
-<form action="/insert" method="post">
+<form action="/insert" method="post" enctype="multipart/form-data">
     {% csrf_token %}
         <table>
             {{ form1.as_table }}

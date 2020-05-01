@@ -3,9 +3,7 @@
 <div>
     <form action="/search" method="POST">
         {% csrf_token %}
-        <input type="text" name="pid" placeholder="Enter patient ID">
-        OR
-        <input type="number" name="phno" placeholder="Enter patient phone number">
+        <input type="text" name="parameter" placeholder="Enter patient search string">
         <input type="submit" value="Search">
 
     </form>

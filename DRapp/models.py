@@ -22,21 +22,25 @@ class Patient(models.Model):
                            ('AB-', 'abneg'),
                            )
     blood_group = models.CharField(choices=blood_group_choices, max_length=3)
-    patient_photo_file_path = models.CharField(max_length=100)
+    patient_photo = models.ImageField(upload_to='patient_photos/', default=None)
 
 
 class DiabeticHistory(models.Model):
     patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    diabetic_type = models.CharField(max_length=6)
-    sugar_Fasting_value = models.CharField(max_length=15)
-    sugar_Non_fasting_value = models.CharField(max_length=15)
+    TYPE_CHOICES = (
+        ('TYPE1', 'TYPE1'),
+        ('TYPE2', 'TYPE2'),
+    )
+    diabetic_type = models.CharField(choices=TYPE_CHOICES, max_length=6)
+    sugar_Fasting_value = models.IntegerField()
+    sugar_Non_fasting_value = models.IntegerField()
     time_duration = models.IntegerField()
-    diab_report_path = models.CharField(max_length=100)
+    diab_report = models.FileField(upload_to='patient_diabetic_history/', default=None)
 
 
 class DiabeticRetinopathy(models.Model):
     patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    retina_photo_path = models.CharField(max_length=100)
+    retina_photo = models.ImageField(upload_to='patient_retina_photos/', default=None)
     predicted_stage = models.CharField(max_length=10)
     confirmation = models.CharField(max_length=5)
 

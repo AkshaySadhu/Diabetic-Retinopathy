@@ -9,17 +9,17 @@
 {% if predicted %}
 {% for i in result %}
 Patient ID:{{i.patient_id_id}}<br>
-Retina image path:{{i.retina_photo_path}}<br>
+Retina image:<img src="{{i.retina_photo.url}}" height="150" width="150"><br>
 Predicted Category:{{i.predicted_stage}}<br>
 Confirmation percentage:{{i.confirmation}}<br>
 {% endfor %}
 {% else %}
 <h2>Diabetic Retinopathy form</h2>
 <h4>Patient_id: {{id}}</h4>
-<form action="/addDR/{{id}}/predict" method="POST">
+<form action="/addDR/{{id}}/predict" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
 <table>
-    <h3>Enter Retina image photo path:</h3>{{form.retina_photo_path}}
+    <h3>Enter Retina image photo :</h3>{{form.retina_photo}}
 </table>
     <input type="submit" value="Predict">
 </form>

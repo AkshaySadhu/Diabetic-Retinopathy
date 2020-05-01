@@ -1,8 +1,11 @@
 from django.urls import path
 from . import views
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
-    path('', views.home),
+    path('', views.prelogin),
+    path('home/', views.home),
     path('add', views.add),
     path('insert', views.insert),
     path('search', views.search),
@@ -10,4 +13,5 @@ urlpatterns = [
     path('pendingDR', views.pending),
     path('addDR/<int:id>', views.dr),
     path('addDR/<int:id>/predict', views.dr),
-]
+    path('login', views.loggingin),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

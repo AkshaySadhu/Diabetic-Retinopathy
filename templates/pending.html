@@ -9,9 +9,9 @@
 <h2>Pending to upload Retina Photo</h2>
     {% block content %}
     <table border="1">
-        <tr><th>ID</th><th>NAME</th><th>AGE</th><th>GENDER</th><th>PH.NO</th><th>ADDRESS</th><th>BLOOD GROUP</th><th>Photo Path</th><th>ACTION</th></tr>
+        <tr><th>ID</th><th>NAME</th><th>AGE</th><th>GENDER</th><th>PH.NO</th><th>BLOOD GROUP</th><th>Photo Path</th><th>ACTION</th></tr>
         {% for x in pending_list %}
-            <tr><td>{{x.patient_id}}</td><td>{{x.patient_name}}</td><td>{{x.patient_age}}</td><td>{{x.gender}}</td><td>{{x.phone_no}}</td><td>{{x.address}}</td><td>{{x.blood_group}}</td><td>{{x.patient_photo_file_path}}</td><td><a href="addDR/{{x.patient_id}}"><button>upload retina photo</button></a></td></tr>
+            <tr><td>{{x.patient_id}}</td><td>{{x.patient_name}}</td><td>{{x.patient_age}}</td><td>{{x.gender}}</td><td>{{x.phone_no}}</td><td>{{x.blood_group}}</td><td>{{x.patient_photo}}</td><td><a href="addDR/{{x.patient_id}}"><button>upload retina photo</button></a></td></tr>
         {% endfor %}
     </table>
     {% endblock %}
