@@ -1,11 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>DR</title>
-</head>
-<body>
-{% include 'navbar.html' %}
+{% extends 'base.html' %}
+
+{% block title %}
+    DR
+{% endblock title %}
+
+
+{% block body %}
 <h2>Patient Personal Details</h2>
 <table>
     {% for personal in ppd %}
@@ -15,7 +15,7 @@
     <tr><th>Gender:</th><td>{{personal.gender}}</td></tr>
     <tr><th>PH.No</th><td>{{personal.phone_no}}</td></tr>
     <tr><th>Blood Group</th><td>{{personal.blood_group}}</td></tr>
-    <tr><th>photo_file_path</th><td>{{personal.patient_photo_file_path}}</td></tr>
+    <tr><th>Patient photo</th><td><img src="{{personal.patient_photo.url}}" height="100" width="100"></td></tr>
     <tr><th>address</th><td>{{personal.address}}</td></tr>
     {% endfor %}
 </table>
@@ -26,7 +26,7 @@
     <tr><th>Sugar Fasting Value</th><td>{{history.sugar_Fasting_value}}</td></tr>
     <tr><th>Sugar Non Fasting Value</th><td>{{history.sugar_Non_fasting_value}}</td></tr>
     <tr><th>Duration of Diabeties</th><td>{{history.time_duration}}</td></tr>
-    <tr><th>diabeties_report_path</th><td>{{history.diab_report_path}}</td></tr>
+    <tr><th>previous diabeties report</th><td>{{history.diab_report}}</td></tr>
     {% endfor %}
 </table>
 <br>
@@ -34,9 +34,12 @@
 <h2>Diabetic Retinopathy Details</h2>
 <table>
     {% for i in dr %}
-    <tr><th>Retina photo path</th><td>{{i.retina_photo_path}}</td></tr>
-    <tr><th>Predicted stage</th><td>{{i.predicted_stage}}</td></tr>
-    <tr><th>Confirmation Percentage</th><td>{{i.confirmation}}</td></tr>
+    <tr><th>left Retina photo</th><td><img src="{{i.left_retina_photo.url}}" height="150" width="150"></td></tr>
+    <tr><th>right Retina photo</th><td><img src="{{i.right_retina_photo.url}}" height="150" width="150"></td></tr>
+    <tr><th>left Predicted stage</th><td>{{i.left_predicted_stage}}</td></tr>
+    <tr><th>right Predicted stage</th><td>{{i.right_predicted_stage}}</td></tr>
+    <tr><th>left Confirmation Percentage</th><td>{{i.left_confirmation}}</td></tr>
+    <tr><th>right Confirmation Percentage</th><td>{{i.right_confirmation}}</td></tr>
     {% endfor %}
 </table>
 <a href= ""><button>Print</button></a>
@@ -45,5 +48,5 @@
 <a href= "addDR/{{x.patient_id}}"><button>Add Retina image</button></a>
 {% endfor %}
 {% endif %}
-</body>
-</html>
+<a href= ""><button>Edit</button></a><a href= ""><button>Delete</button></a>
+{% endblock body %}

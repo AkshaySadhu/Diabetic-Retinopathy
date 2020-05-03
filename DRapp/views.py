@@ -1,39 +1,49 @@
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import *
 from django.shortcuts import *
 from DRapp.forms import *
 from .models import *
 import random
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 
 def prelogin(request):
-    return render(request, "login.html")
+    return render(request, 'login.html')
 
+
+@login_required(login_url='')
 def home(request):
     return render(request, "home.html")
 
 
+@login_required(login_url='')
 def add(request):
     form1 = PersonalDetails()
     return render(request, "add_patient.html", {'form1': form1})
 
 
+@login_required(login_url='')
 def pending(request):
     drlist = DiabeticRetinopathy.objects.values_list('patient_id_id', flat=True)
     main_list = list(Patient.objects.exclude(patient_id__in=drlist))
     return render(request, "pending.html", {'pending_list': main_list})
 
 
+@login_required(login_url='')
 def dr(request, id):
 
     if request.method == 'POST':
         files = request.FILES
-        files['retina_photo'].name = str(id) + '_retina.' + files['retina_photo'].name.split('.')[-1]
-        category = random.choice(['1','2','3','4','5'])
-        confirmation = random.choice(['90','94','95'])
+        files['left_retina_photo'].name = str(id) + '_left_retina.' + files['left_retina_photo'].name.split('.')[-1]
+        files['right_retina_photo'].name = str(id) + '_right_retina.' + files['right_retina_photo'].name.split('.')[-1]
+        left_category = random.choice(['1','2','3','4','5'])
+        left_confirmation = random.choice(['90','94','95'])
+        right_category = random.choice(['1', '2', '3', '4', '5'])
+        right_confirmation = random.choice(['90', '94', '95'])
         checking = DiabeticRetinopathy.objects.filter(patient_id_id=id).count()
         if checking == 0:
-            diabeticret = DiabeticRetinopathy(patient_id_id=id, retina_photo=files['retina_photo'], predicted_stage=category, confirmation=confirmation)
+            diabeticret = DiabeticRetinopathy(patient_id_id=id, left_retina_photo=files['left_retina_photo'], left_predicted_stage=left_category, left_confirmation=left_confirmation, right_retina_photo=files['right_retina_photo'], right_predicted_stage=right_category, right_confirmation=right_confirmation)
             diabeticret.save()
         details = DiabeticRetinopathy.objects.filter(patient_id_id=id)
         return render(request, "diabetic_retinopathy.html", {'result': details, 'predicted': True})
@@ -42,7 +52,7 @@ def dr(request, id):
         return render(request, "diabetic_retinopathy.html", {'id': id, 'form': drform, 'predicted': False})
 
 
-
+@login_required(login_url='')
 def insert(request):
     data = request.POST
     files = request.FILES
@@ -76,18 +86,21 @@ def insert(request):
                 diab_report=files['diab_report'],
             )
             diabetic_history.save()
-            return HttpResponse("INSERTION SUCCESS")
+            messages.success(request, "PATIENT ADDED SUCCESSFULLY! \n PLEASE ADD RETINA PHOTOS")
+            return redirect("addDR/" + str(new_pid))
         else:
-            return HttpResponse("entries already present")
+            return HttpResponse("<script>alert('Entries already Present'); window.history.back();</script>")
     else:
-        return HttpResponse("Entries already Present")
+        return HttpResponse("Something went wrong")
 
 
+@login_required(login_url='')
 def get_all(request):
     all = list(Patient.objects.all())
     return render(request, "listall.html", {'all': all})
 
 
+@login_required(login_url='')
 def search(request):
     if request.method == 'POST':
         data = request.POST
@@ -111,3 +124,13 @@ def loggingin(request):
         return redirect('home/')
     else:
         return HttpResponse("Invalid Credentials")
+
+
+@login_required(login_url='')
+def user_logout(request):
+    if request.user.is_authenticated:
+        logout(request)
+        messages.success(request, 'LOGOUT SUCCESSFUL')
+        return redirect("/")
+    else:
+        return HttpResponse('User not logged in')

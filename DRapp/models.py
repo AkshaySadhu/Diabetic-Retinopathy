@@ -1,4 +1,13 @@
 from django.db import models
+import os
+
+
+def get_upload_path(instance, filename):
+    return os.path.join(str(instance.patient_id), filename)
+
+
+def get_upload_path_other_two(instance, filename):
+    return os.path.join(str(instance.patient_id_id), filename)
 
 
 class Patient(models.Model):
@@ -22,7 +31,7 @@ class Patient(models.Model):
                            ('AB-', 'abneg'),
                            )
     blood_group = models.CharField(choices=blood_group_choices, max_length=3)
-    patient_photo = models.ImageField(upload_to='patient_photos/', default=None)
+    patient_photo = models.ImageField(upload_to=get_upload_path, default=None)
 
 
 class DiabeticHistory(models.Model):
@@ -35,12 +44,15 @@ class DiabeticHistory(models.Model):
     sugar_Fasting_value = models.IntegerField()
     sugar_Non_fasting_value = models.IntegerField()
     time_duration = models.IntegerField()
-    diab_report = models.FileField(upload_to='patient_diabetic_history/', default=None)
+    diab_report = models.FileField(upload_to=get_upload_path_other_two, default=None)
 
 
 class DiabeticRetinopathy(models.Model):
     patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    retina_photo = models.ImageField(upload_to='patient_retina_photos/', default=None)
-    predicted_stage = models.CharField(max_length=10)
-    confirmation = models.CharField(max_length=5)
+    left_retina_photo = models.ImageField(upload_to=get_upload_path_other_two, default=None)
+    right_retina_photo = models.ImageField(upload_to=get_upload_path_other_two, default=None)
+    left_predicted_stage = models.CharField(max_length=10)
+    right_predicted_stage = models.CharField(max_length=10)
+    left_confirmation = models.CharField(max_length=5)
+    right_confirmation = models.CharField(max_length=5)
 

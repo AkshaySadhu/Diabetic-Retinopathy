@@ -1,23 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Search result</title>
-</head>
-<body>
-        {% include 'navbar.html' %}
-    {% block content %}
+{% extends 'base.html' %}
+
+{% block title %}
+    DR
+{% endblock title %}
+
+
+{% block body %}
         <h3>Search Result For {{search_key}}</h3>
         {% if search_result|length >= 1 %}
     <table border="1">
-        <tr><th>NAME</th><th>AGE</th><th>GENDER</th><th>PH.NO</th><th>BLOOD GROUP</th><th>Patient Photo</th><th>ACTION</th></tr>
+        <tr><th>NAME</th><th>AGE</th><th>GENDER</th><th>PH.NO</th><th>BLOOD GROUP</th><th>ACTION</th></tr>
         {% for x in search_result %}
-            <tr><td>{{x.patient_name}}</td><td>{{x.patient_age}}</td><td>{{x.gender}}</td><td>{{x.phone_no}}</td><td>{{x.blood_group}}</td><td><img src="{{x.patient_photo.url}}"></td><td><a href=""><button>view details</button></a></td></tr>
+            <tr><td>{{x.patient_name}}</td><td>{{x.patient_age}}</td><td>{{x.gender}}</td><td>{{x.phone_no}}</td><td>{{x.blood_group}}</td><td><a href=""><button>view details</button></a></td></tr>
         {% endfor %}
     </table>
         {% else %}
         <h4>No Result for the {{search_key}}</h4>
         {% endif %}
-    {% endblock %}
-</body>
-</html>
+
+{% endblock body %}

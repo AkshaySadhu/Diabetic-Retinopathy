@@ -1,10 +1,44 @@
-{% include 'navbar.html' %}
-<div><h2>Search Patient</h2></div>
-<div>
-    <form action="/search" method="POST">
-        {% csrf_token %}
-        <input type="text" name="parameter" placeholder="Enter patient search string">
-        <input type="submit" value="Search">
+{% extends 'base.html' %}
 
-    </form>
-</div>
+{% block title %}
+	Home
+{% endblock title %}
+
+{% block header%}
+<script type="text/javascript">
+		function validate(event)
+		{
+			s_val = document.getElementById('search').value
+			console.log(s_val.length)
+			if(s_val.match(/^[0-9]+$/))
+			{
+				if (s_val.length!=10){
+					alert("Please enter 10 number")
+					event.preventDefault()
+				}
+			}
+			else if (s_val.match(/^[0-9a-zA-Z]+$/))
+			{
+				if(!s_val.match(/^[a-z]+$/i))
+				{
+					alert("please enter phone number or patient name. Alphanumerics not allowed")
+  					event.preventDefault()
+				}
+
+			}
+		}
+	</script>
+{% endblock header%}
+
+{% block body %}
+
+	<div><h2>Search Patient</h2></div>
+	<div>
+	    <form action="" method="POST" >
+	        {% csrf_token %}
+	        <input id="search" type="text" name="parameter" placeholder="Search by patient phone number or Name" required>
+	        <input type="submit" value="Search" onclick="validate(event)">
+	    </form>
+	</div>
+
+{% endblock body %}

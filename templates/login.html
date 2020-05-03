@@ -1,10 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>User Login</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}
+	User Login
+{% endblock title %}
+
+
+{% block body %}
+
 <form action="/login" method="POST">
     {% csrf_token %}
     <label>Username</label><input type="text" name="username" required>
@@ -12,5 +14,4 @@
     <input type="submit" value="Login">
 </form>
 
-</body>
-</html>
+{% endblock body %}
