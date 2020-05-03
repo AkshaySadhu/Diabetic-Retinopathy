@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}
     DR
 {% endblock title %}
-
+{% block header %}
+<link rel="stylesheet" type="text/css" href="{% static 'styles/Patientdetails.css' %}">
+{% endblock header %}
 
 {% block body %}
 <h2>Patient Personal Details</h2>
@@ -26,7 +28,7 @@
     <tr><th>Sugar Fasting Value</th><td>{{history.sugar_Fasting_value}}</td></tr>
     <tr><th>Sugar Non Fasting Value</th><td>{{history.sugar_Non_fasting_value}}</td></tr>
     <tr><th>Duration of Diabeties</th><td>{{history.time_duration}}</td></tr>
-    <tr><th>previous diabeties report</th><td>{{history.diab_report}}</td></tr>
+    <tr><th>previous diabeties report</th><td><a href="{{history.diab_report.url}}"><button>View Diabeties Report</button></a></td></tr>
     {% endfor %}
 </table>
 <br>
@@ -45,7 +47,7 @@
 <a href= ""><button>Print</button></a>
 {% else %}
 {% for x in ppd %}
-<a href= "addDR/{{x.patient_id}}"><button>Add Retina image</button></a>
+<a href= "/addDR/{{x.patient_id}}"><button>Add Retina image</button></a>
 {% endfor %}
 {% endif %}
 <a href= ""><button>Edit</button></a><a href= ""><button>Delete</button></a>

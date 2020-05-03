@@ -134,3 +134,18 @@ def user_logout(request):
         return redirect("/")
     else:
         return HttpResponse('User not logged in')
+
+
+@login_required(login_url='')
+def view_patient(request, id):
+    if id:
+        res1 = Patient.objects.filter(patient_id=id)
+    if res1.count() == 1:
+        res2 = DiabeticHistory.objects.filter(patient_id=list(res1)[0].patient_id)
+        status = False
+        res3 = DiabeticRetinopathy.objects.filter(patient_id=list(res1)[0].patient_id)
+        if res3.count() == 1:
+            status = True
+        return render(request, "patient_personal_details.html", {'ppd': res1, 'pdh': res2, 'dr': res3, 'status': status})
+    else:
+        return HttpResponse("Patient Not Found")

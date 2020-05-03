@@ -13,5 +13,6 @@ urlpatterns = [
     path('addDR/<int:id>', views.dr),
     path('addDR/<int:id>/predict', views.dr),
     path('login', views.loggingin),
-    path('logout', views.user_logout)
+    path('logout', views.user_logout),
+    path('view/<int:id>', views.view_patient),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -34,7 +34,7 @@
 
 	<div><h2>Search Patient</h2></div>
 	<div>
-	    <form action="" method="POST" >
+	    <form action="/search" method="POST" >
 	        {% csrf_token %}
 	        <input id="search" type="text" name="parameter" placeholder="Search by patient phone number or Name" required>
 	        <input type="submit" value="Search" onclick="validate(event)">

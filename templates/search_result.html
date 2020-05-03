@@ -11,7 +11,7 @@
     <table border="1">
         <tr><th>NAME</th><th>AGE</th><th>GENDER</th><th>PH.NO</th><th>BLOOD GROUP</th><th>ACTION</th></tr>
         {% for x in search_result %}
-            <tr><td>{{x.patient_name}}</td><td>{{x.patient_age}}</td><td>{{x.gender}}</td><td>{{x.phone_no}}</td><td>{{x.blood_group}}</td><td><a href=""><button>view details</button></a></td></tr>
+            <tr><td>{{x.patient_name}}</td><td>{{x.patient_age}}</td><td>{{x.gender}}</td><td>{{x.phone_no}}</td><td>{{x.blood_group}}</td><td><a href="/view/{{x.patient_id}}"><button>view details</button></a></td></tr>
         {% endfor %}
     </table>
         {% else %}

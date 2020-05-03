@@ -1,0 +1,131 @@
+
+body{
+Margin-left:25%;
+background-color:white;
+width:50%;
+border: 1px solid white;
+border-radius: 5px;
+}
+
+tr{
+margin-left:50px;
+}
+
+
+th{
+text-align:left;
+}
+
+td{
+text-align:center;
+}
+html{
+background-color:#663300;
+/*background-image: url(leaves.jpeg);
+background-size:100%;*/
+}
+
+div.all{
+overflow-x:scroll;
+white-space: nowrap;
+position:relative;
+}
+div.all div{
+overflow-x:hidden;
+overflow-y: hidden;
+display: inline-block;
+  color: black;
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
+}
+div.all::-webkit-scrollbar{
+display:none;
+}
+
+div.all{
+-ms-overflow-style: none;
+}
+
+table center{
+text-align:left;
+margin-left:20%;
+margin-right:auto;
+font-size:20px;
+border:1px solid black;
+}
+
+h2{
+text-align:center;
+color:Gray;
+}
+
+.ppd{
+margin-left:10%;
+margin-right:10%;
+margin-top:5%; 
+margin-bottom:10%;
+width:80%;
+background-color:white;
+border: none;
+border-radius: 5px;
+ box-shadow:5px 5px 50px 5px grey; 
+}
+
+.dh{
+margin-left:10%;
+margin-right:10%;
+margin-top:5%; 
+margin-bottom:10%;
+background-color:white;
+width:80%;
+height:350px;
+border: none;
+border-radius: 5px;
+ box-shadow:5px 5px 30px 5px grey; 
+}
+
+.drd{
+margin-left:10%;
+margin-right:10%;
+margin-top:5%; 
+margin-bottom:10%;
+width:80%;
+height:350px;
+border: none;
+background-color:white;
+border-radius: 5px;
+ box-shadow:5px 5px 30px 5px grey; 
+}
+
+button{
+margin-top:30px;
+margin-bottom:30px;
+margin-left:110px;
+padding: 15px 25px;
+width:25%;
+  font-size: 12px;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  color: #fff;
+  background-color: #1ABC9A;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 3px #999;
+}
+
+button:active{
+transform:translateY(4px);
+}
+
+.center{
+display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 15%;
+}
+
+.ppd:hover, .dh:hover, .drd:hover{
+transform: scale(1.05);
+}
