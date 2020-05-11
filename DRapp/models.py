@@ -21,14 +21,14 @@ class Patient(models.Model):
         ('F', 'Female'),
     )
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
-    blood_group_choices = (('A+', 'apos'),
-                           ('A-', 'aneg'),
-                           ('B+', 'bpos'),
-                           ('B-', 'bneg'),
-                           ('O+', 'opos'),
-                           ('O-', 'oneg'),
-                           ('AB+', 'abpos'),
-                           ('AB-', 'abneg'),
+    blood_group_choices = (('A+', 'A+'),
+                           ('A-', 'A-'),
+                           ('B+', 'B+'),
+                           ('B-', 'B-'),
+                           ('O+', 'O+'),
+                           ('O-', 'O-'),
+                           ('AB+', 'AB+'),
+                           ('AB-', 'AB-'),
                            )
     blood_group = models.CharField(choices=blood_group_choices, max_length=3)
     patient_photo = models.ImageField(upload_to=get_upload_path, default=None)
@@ -53,6 +53,4 @@ class DiabeticRetinopathy(models.Model):
     right_retina_photo = models.ImageField(upload_to=get_upload_path_other_two, default=None)
     left_predicted_stage = models.CharField(max_length=10)
     right_predicted_stage = models.CharField(max_length=10)
-    left_confirmation = models.CharField(max_length=5)
-    right_confirmation = models.CharField(max_length=5)
 

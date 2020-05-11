@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}
+	Edit Patient
+{% endblock title %}
+
+{%block header%}
+{%endblock header%}
+
+{% block body %}
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+        document.getElementById("id_gender").disabled = true;
+        document.getElementById("id_blood_group").disabled = true;
+        document.getElementById("id_patient_photo").disabled = true;
+    });
+    function enable(event) {
+        document.getElementById('id_patient_id').disabled = false;
+    }
+</script>
+    <div>
+		<form  action="/update" method="POST" enctype="multipart/form-data">
+		    {% csrf_token %}
+		        <table>
+		            {{ ppd.as_table }}
+		        </table>
+                <table>
+		            {{ pdh.as_table }}
+		        </table>
+                <table>
+		            {{ dr.as_table }}
+		        </table>
+		    <input type="submit" value="Submit" onclick="enable(event)"><button onclick="javascript:history.go(-1)">Cancel</button>
+		</form>
+	</div>
+{% endblock body %}

@@ -1,6 +1,6 @@
 from django.forms import *
 
-from DRapp.models import Patient
+from DRapp.models import *
 
 
 class PersonalDetails(forms.Form):
@@ -21,3 +21,26 @@ class PersonalDetails(forms.Form):
 class DiabeticRetinopathyDetails(forms.Form):
     left_retina_photo = ImageField(label='Left Retina photo', required=True, widget=FileInput(attrs={'id': 'left_retina_photo','title': 'formats supported jpg,png and jpeg'}))
     right_retina_photo = ImageField(label='Right Retina photo', required=True, widget=FileInput(attrs={'id': 'right_retina_photo','title': 'formats supported jpg,png and jpeg'}))
+
+
+class PpdForm(ModelForm):
+    class Meta:
+        model = Patient
+        fields = '__all__'
+        widgets = {
+            'patient_id': TextInput(attrs={'disabled': True}),
+            'patient_name': TextInput(attrs={'disabled': True}),
+        }
+
+
+class PdhForm(ModelForm):
+    class Meta:
+        model = DiabeticHistory
+        fields = '__all__'
+        exclude = ['patient_id']
+
+
+class DRForm(ModelForm):
+    class Meta:
+        model = DiabeticRetinopathy
+        fields = ['left_retina_photo', 'right_retina_photo']

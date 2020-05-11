@@ -1,14 +1,16 @@
 <h2>Diabetic Retinopathy</h2>
-<div>
-    <a href="/home">Home</a>
-    <a href="/list">List of all Patient</a>
-    <a href="/add">ADD a Patient</a>
-    <a href="">Contact</a>
-    <a href="">About</a>
-    {% if user.is_authenticated %}
-        welcome {{user.username}} !!!
-    {% else %}
-        Welcome Guest
-    {% endif %}
-    <a href="/logout">Logout</a>
-</div>
+    <nav class="navbar navbar-inverse">
+    <ul id="navbar" class="nav navbar-nav">
+        <li><a href="/home">Home</a></li>
+        <li><a href="/list/c">List of all Patient</a></li>
+        <li><a href="/add">ADD a Patient</a></li>
+        <li><a href="">Contact</a></li>
+        <li><a href="">About</a></li>
+        <li><a>    {% if user.is_authenticated %}
+                welcome {{user.username}} !!!
+            {% else %}
+                Welcome Guest
+            {% endif %}</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+    </nav>

@@ -24,6 +24,7 @@
 					alert("Invalid Phone Number");
 					event.preventDefault();
 				}
+
 			}
 
 
@@ -53,7 +54,7 @@
 		        <table>
 		            {{ form1.as_table }}
 		        </table>
-		    <input type="submit" value="Submit" onclick="check_form(event)">
+		    <input type="submit" value="Submit" onclick="check_form(event)"><button onclick="javascript:history.go(-1)">Cancel</button>
 		</form>
 	</div>
 {% endblock body %}

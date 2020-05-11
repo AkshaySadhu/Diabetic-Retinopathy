@@ -4,28 +4,40 @@
 	DR
 {% endblock title %}
 
+{% block header %}
+	<script type="text/javascript">
+		img_ext=['jpg','png','jpeg'];
+
+		function check_form(event)
+		{
+			left_pic_uploaded = document.getElementById('left_retina_photo').value;
+			right_pic_uploaded =  document.getElementById('right_retina_photo').value;
+
+			left_ext = left_pic_uploaded.split('.').pop();
+			right_ext = right_pic_uploaded.split('.').pop();
+
+
+			if(!(img_ext.includes(left_ext) && img_ext.includes(right_ext)))
+			{
+				event.preventDefault();
+				alert('File Supported formats are:\n\nImage file : PNG, JPG, JPEG\n\nDocument : TXT, PDF, DOCX');
+			}
+
+		}
+	</script>
+{% endblock header %}
+
 
 {% block body %}
-{% if predicted %}
-{% for i in result %}
-Patient ID:{{i.patient_id_id}}<br>
-Left Retina image:<img src="{{i.left_retina_photo.url}}" height="150" width="150"><br>
-right Retina image:<img src="{{i.right_retina_photo.url}}" height="150" width="150"><br>
-left Predicted Category:{{i.left_predicted_stage}}<br>
-right Predicted Category:{{i.right_predicted_stage}}<br>
-left Confirmation percentage:{{i.left_confirmation}}<br>
-right Confirmation percentage:{{i.right_confirmation}}<br>
-{% endfor %}
-{% else %}
+
 <h2>Diabetic Retinopathy form</h2>
 <h4>Patient_id: {{id}}</h4>
-<form action="/addDR/{{id}}/predict" method="POST" enctype="multipart/form-data">
+<form action="/addDR/{{id}}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
 <table>
     <tr><td>Enter Left Retina image photo :</td><td>{{form.left_retina_photo}}</td></tr>
     <tr><td>Enter right Retina image photo :</td><td>{{form.right_retina_photo}}</td></tr>
 </table>
-    <input type="submit" value="upload">
+    <input type="submit" value="upload" onclick="check_form(event)">
 </form>
-{% endif %}
 {% endblock body %}

@@ -1,11 +1,34 @@
 {% extends 'base.html' %}
-{% load static %}
+
 {% block title %}
     DR
 {% endblock title %}
-{% block header %}
-<link rel="stylesheet" type="text/css" href="{% static 'styles/Patientdetails.css' %}">
-{% endblock header %}
+{%block header%}
+	<script type="text/javascript">
+		function verify(event)
+		{
+		    c_val = confirm("Delete Patient record?");
+		    if(!c_val)
+		        event.preventDefault();
+		}
+
+		function print_pdf(id)
+		{
+            var printWindow = window.open('/print_pdf/{{id}}')
+            printWindow.addEventListener('load', function() {
+                if (Boolean(printWindow.chrome)) {
+                    printWindow.print();
+                    setTimeout(function(){
+                        printWindow.close();
+                    }, 100);
+                } else {
+                    printWindow.print();
+                    printWindow.close();
+                }
+            }, true);
+		}
+	</script>
+{%endblock header%}
 
 {% block body %}
 <h2>Patient Personal Details</h2>
@@ -28,7 +51,7 @@
     <tr><th>Sugar Fasting Value</th><td>{{history.sugar_Fasting_value}}</td></tr>
     <tr><th>Sugar Non Fasting Value</th><td>{{history.sugar_Non_fasting_value}}</td></tr>
     <tr><th>Duration of Diabeties</th><td>{{history.time_duration}}</td></tr>
-    <tr><th>previous diabeties report</th><td><a href="{{history.diab_report.url}}"><button>View Diabeties Report</button></a></td></tr>
+    <tr><th>previous diabeties report</th><td><a target="_blank" href="{{history.diab_report.url}}"><button>View Diabeties Report</button></a></td></tr>
     {% endfor %}
 </table>
 <br>
@@ -38,17 +61,21 @@
     {% for i in dr %}
     <tr><th>left Retina photo</th><td><img src="{{i.left_retina_photo.url}}" height="150" width="150"></td></tr>
     <tr><th>right Retina photo</th><td><img src="{{i.right_retina_photo.url}}" height="150" width="150"></td></tr>
+    {% if i.left_predicted_stage%}
     <tr><th>left Predicted stage</th><td>{{i.left_predicted_stage}}</td></tr>
     <tr><th>right Predicted stage</th><td>{{i.right_predicted_stage}}</td></tr>
-    <tr><th>left Confirmation Percentage</th><td>{{i.left_confirmation}}</td></tr>
-    <tr><th>right Confirmation Percentage</th><td>{{i.right_confirmation}}</td></tr>
+    <tr><td><button onclick="print_pdf({{id}})">Print</button></td></tr>
+    {% else %}
+    <tr><td><a href= "/predict/{{i.patient_id_id}}"><button>Predict</button></a></td></tr>
+    {%endif%}
     {% endfor %}
 </table>
-<a href= ""><button>Print</button></a>
+
 {% else %}
 {% for x in ppd %}
 <a href= "/addDR/{{x.patient_id}}"><button>Add Retina image</button></a>
 {% endfor %}
 {% endif %}
-<a href= ""><button>Edit</button></a><a href= ""><button>Delete</button></a>
+<a href= "/edit/{{id}}"><button>Edit</button></a>
+<a href="/delete/{{id}}"><button onclick="verify(event)">Delete</button></a>
 {% endblock body %}

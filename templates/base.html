@@ -1,23 +1,26 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
-	<title>{% block title %}DRAPP{% endblock title %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'CSS/navbar.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <title>{% block title %}DRAPP{% endblock title %}</title>
     {% block header %} {% endblock header %}
 </head>
 <body>
 	{% if request.user.is_authenticated%}
 		{% include 'navbar.html' %}
 	{% endif %}
-
-
 	{% if messages %}
-		<ul class="messages">
-    		{% for message in messages %}
-    			<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    		{% endfor %}
-		</ul>
-	{% endif %}
-
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+        {% endif %}
 
 	{% block body %}
 	{% endblock body %}

@@ -4,9 +4,15 @@ from django.http import *
 from django.shortcuts import *
 from DRapp.forms import *
 from .models import *
-import random
+import random,shutil
 from django.contrib.auth import authenticate, login, logout
+from django.conf import settings
+import time
+from django.views.decorators.cache import never_cache
 
+from .ImagePreProcess import *
+from .PredictStage import *
+import os
 
 def prelogin(request):
     return render(request, 'login.html')
@@ -32,24 +38,26 @@ def pending(request):
 
 @login_required(login_url='')
 def dr(request, id):
-
-    if request.method == 'POST':
-        files = request.FILES
-        files['left_retina_photo'].name = str(id) + '_left_retina.' + files['left_retina_photo'].name.split('.')[-1]
-        files['right_retina_photo'].name = str(id) + '_right_retina.' + files['right_retina_photo'].name.split('.')[-1]
-        left_category = random.choice(['1','2','3','4','5'])
-        left_confirmation = random.choice(['90','94','95'])
-        right_category = random.choice(['1', '2', '3', '4', '5'])
-        right_confirmation = random.choice(['90', '94', '95'])
-        checking = DiabeticRetinopathy.objects.filter(patient_id_id=id).count()
-        if checking == 0:
-            diabeticret = DiabeticRetinopathy(patient_id_id=id, left_retina_photo=files['left_retina_photo'], left_predicted_stage=left_category, left_confirmation=left_confirmation, right_retina_photo=files['right_retina_photo'], right_predicted_stage=right_category, right_confirmation=right_confirmation)
+    checking_in_patient = Patient.objects.filter(patient_id=id).count()
+    if checking_in_patient == 1:
+        if request.method == 'POST':
+            files = request.FILES
+            files['left_retina_photo'].name = str(id) + '_left_retina.' + files['left_retina_photo'].name.split('.')[-1]
+            files['right_retina_photo'].name = str(id) + '_right_retina.' + files['right_retina_photo'].name.split('.')[-1]
+            diabeticret = DiabeticRetinopathy(patient_id_id=id, left_retina_photo=files['left_retina_photo'], right_retina_photo=files['right_retina_photo'])
             diabeticret.save()
-        details = DiabeticRetinopathy.objects.filter(patient_id_id=id)
-        return render(request, "diabetic_retinopathy.html", {'result': details, 'predicted': True})
+            messages.success(request, "SUCCESSFULLY UPLOADED THE IMAGES TO THE SERVER!!")
+            return redirect("/predict/"+str(id))
+        else:
+            checking = DiabeticRetinopathy.objects.filter(patient_id_id=id).count()
+            if checking == 0:
+                drform = DiabeticRetinopathyDetails()
+                return render(request, "diabetic_retinopathy.html", {'id': id, 'form': drform, 'predicted': False})
+            messages.success(request, "Retinal images was already present no need to add!!")
+            return redirect("/predict/" + str(id))
     else:
-        drform = DiabeticRetinopathyDetails()
-        return render(request, "diabetic_retinopathy.html", {'id': id, 'form': drform, 'predicted': False})
+        return HttpResponse("<script>alert('patient not found'); window.history.back();</script>")
+
 
 
 @login_required(login_url='')
@@ -95,9 +103,16 @@ def insert(request):
 
 
 @login_required(login_url='')
-def get_all(request):
-    all = list(Patient.objects.all())
-    return render(request, "listall.html", {'all': all})
+def get_all(request, list_type):
+    if list_type in ['c', 'p']:
+        drlist = DiabeticRetinopathy.objects.values_list('patient_id_id', flat=True)
+        if list_type == 'c':
+            all = list(Patient.objects.filter(patient_id__in=drlist))
+        else:
+            all = list(Patient.objects.exclude(patient_id__in=drlist))
+        return render(request, "listall.html", {'all': all})
+    else:
+        return HttpResponse("<script>alert('Something Went Wrong'); window.history.back();</script>")
 
 
 @login_required(login_url='')
@@ -115,6 +130,7 @@ def search(request):
         return HttpResponse("Something went wrong")
 
 
+@never_cache
 def loggingin(request):
     username = request.POST['username']
     password = request.POST['password']
@@ -123,7 +139,8 @@ def loggingin(request):
         login(request, user)
         return redirect('home/')
     else:
-        return HttpResponse("Invalid Credentials")
+        messages.error(request, "INVALID CREDENTIALS")
+        return redirect('/')
 
 
 @login_required(login_url='')
@@ -137,8 +154,89 @@ def user_logout(request):
 
 
 @login_required(login_url='')
+def preprocess(request, id):
+    checking_in_patient = Patient.objects.filter(patient_id=id).count()
+    checking_in_dr = DiabeticRetinopathy.objects.filter(patient_id_id=id).count()
+    if checking_in_patient == 1 and checking_in_dr == 1:
+        data = DiabeticRetinopathy.objects.get(patient_id_id=id)
+        if request.method == 'GET':
+            if data.left_predicted_stage:
+                return render(request, "predict.html",
+                              {'data': data, 'result': 1, 'left_eye': data.left_predicted_stage, 'right_eye': data.right_predicted_stage,
+                               'time_duration': ""})
+            return render(request, "predict.html", {'data': data, 'no_result': 1, 'id': id})
+        elif request.method == 'POST':
+            start = time.time()
+
+            Base_dir = str(settings.BASE_DIR.replace('\\', '/'))
+
+            right_path = Base_dir+str(data.right_retina_photo.url)
+            left_path = Base_dir+str(data.left_retina_photo.url)
+            #print(left_path)
+
+            left_path_normalized = left_path.split('/')
+            left_file_name = left_path_normalized.pop()
+            left_path_normalized = "/".join(left_path_normalized) + "/normalized_" + left_file_name
+
+            right_path_normalized = right_path.split('/')
+            right_file_name = right_path_normalized.pop()
+            right_path_normalized = "/".join(right_path_normalized) + "/normalized_" + right_file_name
+
+            imgObj = imgpp()
+            preObj = integration()
+
+            if imgObj.preprocess_automate(left_path,right_path):
+
+                left_class_0, left_class_1 = preObj.integrate_automate(left_path_normalized)
+                right_class_0, right_class_1 = preObj.integrate_automate(right_path_normalized)
+
+                if left_class_0 == 0:
+                    left_eye = 0
+                elif left_class_0 == 1:
+                    left_eye = left_class_1+1
+
+                if right_class_0 == 0 :
+                    right_eye = 0
+                elif left_class_0 == 1:
+                    right_eye = right_class_1+1
+
+                del imgObj, preObj, Base_dir, right_path, left_path, left_path_normalized, left_file_name, right_path_normalized, right_file_name
+
+                end = time.time()
+                time_consumed = end - start
+
+                data.left_predicted_stage = left_eye
+                data.right_predicted_stage = right_eye
+                data.save()
+                return render(request, "predict.html", {'data': data, 'result': 1, 'left_eye': left_eye, 'right_eye': right_eye, 'time_duration': time_consumed})
+            else:
+                return HttpResponse("Something went wrong")
+    else:
+        return HttpResponse("<script>alert('patient not found under predict stage please check in pending list'); window.history.back();</script>")
+
+
+@login_required(login_url='')
+def delete(request, id):
+    checking_in_patient = Patient.objects.filter(patient_id=id).count()
+    if checking_in_patient == 1:
+        try:
+            p_del = Patient.objects.get(patient_id=id)
+            p_dir = str(settings.BASE_DIR.replace('\\', '/'))+str("/media/")+str(id)
+            if os.path.exists(p_dir):
+                shutil.rmtree(p_dir)
+                p_del.delete()
+            messages.success(request, "Patient Records Deleted")
+        except:
+            messages.error(request, "Something went wrong")
+        finally:
+            return redirect('/list/p')
+    else:
+        return HttpResponse("<script>alert('patient not found'); window.history.back();</script>")
+
+
+@login_required(login_url='')
 def view_patient(request, id):
-    if id:
+    if id > 0:
         res1 = Patient.objects.filter(patient_id=id)
     if res1.count() == 1:
         res2 = DiabeticHistory.objects.filter(patient_id=list(res1)[0].patient_id)
@@ -146,6 +244,73 @@ def view_patient(request, id):
         res3 = DiabeticRetinopathy.objects.filter(patient_id=list(res1)[0].patient_id)
         if res3.count() == 1:
             status = True
-        return render(request, "patient_personal_details.html", {'ppd': res1, 'pdh': res2, 'dr': res3, 'status': status})
+        return render(request, "patient_personal_details.html", {'ppd': res1, 'pdh': res2, 'dr': res3, 'status': status,'id':id})
     else:
         return HttpResponse("Patient Not Found")
+
+
+@login_required(login_url = '')
+def print(request,id):
+    if id > 0:
+        res1 = Patient.objects.filter(patient_id=id)
+    if res1.count() == 1:
+        res2 = DiabeticHistory.objects.filter(patient_id=list(res1)[0].patient_id)
+        status = False
+        res3 = DiabeticRetinopathy.objects.filter(patient_id=list(res1)[0].patient_id)
+        if res3.count() == 1:
+            status = True
+        return render(request, "print_pdf.html", {'ppd': res1, 'pdh': res2, 'dr': res3, 'status': status,'id':id})
+    else:
+        return HttpResponse("Patient Not Found")
+
+
+@login_required(login_url='')
+def edit_patient(request, id):
+    checking = Patient.objects.filter(patient_id=id)
+    if checking.count() == 1:
+        data1 = checking.first()
+        data2 = DiabeticHistory.objects.get(patient_id_id=id)
+        checking2 = DiabeticRetinopathy.objects.filter(patient_id_id=id)
+        dr = DRForm()
+        if checking2.count() == 1:
+            data3 = checking2.first()
+            dr = DRForm(instance=data3)
+        ppd = PpdForm(instance=data1)
+        pdh = PdhForm(instance=data2)
+        return render(request, 'edit_patient.html', {'ppd': ppd, 'pdh': pdh, 'dr': dr})
+    else:
+        return HttpResponse("<script>alert('patient not found'); window.history.back();</script>")
+
+
+@login_required(login_url='')
+def update(request):
+    if request.method == 'POST':
+        data = request.POST
+        files = request.FILES
+        data1 = Patient.objects.filter(patient_id=data['patient_id'])
+        data1.update(patient_age=data['patient_age'], address=data['address'], phone_no=data['phone_no'], )
+        data2 = DiabeticHistory.objects.filter(patient_id_id=data['patient_id'])
+        delete_dr = DiabeticRetinopathy.objects.filter(patient_id_id=data['patient_id'])
+        if delete_dr.count() == 1:
+            delete_dr.first().delete()
+        files['left_retina_photo'].name = str(data['patient_id']) + '_left_retina.' + files['left_retina_photo'].name.split('.')[-1]
+        files['right_retina_photo'].name = str(data['patient_id']) + '_right_retina.' + files['right_retina_photo'].name.split('.')[-1]
+        data3 = DiabeticRetinopathy(patient_id_id=data['patient_id'], left_retina_photo=files['left_retina_photo'],
+                                          right_retina_photo=files['right_retina_photo'])
+        try:
+            data2.update(diabetic_type=data['diabetic_type'], sugar_Fasting_value=data['sugar_Fasting_value'],
+                         sugar_Non_fasting_value=data['sugar_Non_fasting_value'], time_duration=data['time_duration'],
+                         diab_report=files['diab_report'])
+        except:
+            data2.update(diabetic_type=data['diabetic_type'], sugar_Fasting_value=data['sugar_Fasting_value'],
+                         sugar_Non_fasting_value=data['sugar_Non_fasting_value'], time_duration=data['time_duration'])
+        for objects in data1:
+            objects.save()
+        for objects in data2:
+            objects.save()
+        data3.save()
+        messages.success(request, 'Changes Updated Successfully')
+        return redirect("/predict/" + str(data['patient_id']))
+    else:
+        return HttpResponse("<script>alert('Something Went Wrong'); window.history.back();</script>")
+

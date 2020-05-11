@@ -15,6 +15,9 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+STATICFILES_DIRS = [
+os.path.join(BASE_DIR,'static'),
+]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -25,7 +28,7 @@ SECRET_KEY = '8p8m6#y10agi6uqmpzl!8i4+^u)sr5tilm_te*r6!=k37ty7_6'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -69,6 +72,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'DIANADR.wsgi.application'
+
 
 
 # Database
@@ -125,7 +129,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'templates')
-]

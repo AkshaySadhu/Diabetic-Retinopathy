@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}
+	Predict
+{% endblock title %}
+
+{%block header%}
+
+{% endblock header %}
+
+{% block body %}
+<form action="/predict/{{id}}" method="POST">
+	{% csrf_token %}
+	<center><table>
+			<tr>
+				<th>Left Retina Photo</th>
+				<th>Right Retina Photo</th>
+			</tr>
+
+			<tr>
+				<td><img src="{{data.left_retina_photo.url}}" height="250" width="250"></td>
+				<td><img src ="{{data.right_retina_photo.url}}" height="250" width="250"></td>
+			</tr>
+
+			{% if no_result %}
+			<tr>
+				<td colspan="2"><center><button>Predict</button></center></td>
+			</tr>
+			{% endif %}
+			{% if result %}
+				<tr>
+					<td><center>{{data.left_predicted_stage}}</center></td>
+					<td><center>{{data.right_predicted_stage}}</center></td>
+				</tr>
+
+			{% if time_duration %}
+				<tr>
+					<td colspan="2"><center>{{time_duration}} sec</center></td>
+				</tr>
+			{% endif %}
+			{% endif%}
+
+	</table></center>
+</form>
+{% endblock body %}
