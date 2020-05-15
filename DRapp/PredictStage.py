@@ -5,18 +5,25 @@ class integration:
         self.define_variables(img_path)
         self.stage_1_model()
         self.inter_stage_check()
-        return class_1,class_2
+        pre_val = self.predict_val_one()
+        return pre_val
 
     def import_modules(self):
         global tf,cv2
         import tensorflow as tf
         import cv2
 
-    def define_variables(self,img_path):
-        Base_dir = str(settings.BASE_DIR.replace('\\','/'))
+    def define_variables(self, img_path):
+        Base_dir = str(settings.BASE_DIR.replace('\\', '/'))
         self.Stage_1_model_location = Base_dir + '/static/models/New-Stage1Model-traindata.h5'
         self.Stage_2_model_location = Base_dir + '/static/models/New-Stage2Model.h5'
         self.image_location = img_path
+
+    def predict_val_one(self):
+      if(self.class_1==0):
+        return 0
+      elif(self.class_1==1):
+        return self.class_2
 
     def reformat_class_val(self,arr):
         val = list(arr)
@@ -31,24 +38,20 @@ class integration:
 
     def stage_1_model(self):
         self.model_stage_1 = tf.keras.models.load_model(self.Stage_1_model_location)
-        global class_1 
-        class_1  = self.predict_class_val(self.model_stage_1)
-        print("Class predicted by Stage 1 Model : ", class_1)
+        self.class_1  = self.predict_class_val(self.model_stage_1)
+        print("Class predicted by Stage 1 Model : ", self.class_1)
 
     def inter_stage_check(self):
-        if(class_1 == 1):
+        if(self.class_1 == 1):
             self.stage_2_model()
-        elif(class_1 == 0):
-          return 0
+        elif(self.class_1 == 0):
+          return self.class_1
 
     def stage_2_model(self):
         self.model_stage_2 = tf.keras.models.load_model(self.Stage_2_model_location)
-        global class_2
-        class_2  = self.predict_class_val(self.model_stage_2)
-        print("Class predicted by Stage 2 Model : ", class_2)
-        return (class_2)
-
-
+        self.class_2  = self.predict_class_val(self.model_stage_2) + 1
+        print("Class predicted by Stage 2 Model : ",  self.class_2)
 
 i1 = integration()
 del i1
+

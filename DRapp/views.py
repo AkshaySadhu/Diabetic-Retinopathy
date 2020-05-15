@@ -187,18 +187,9 @@ def preprocess(request, id):
 
             if imgObj.preprocess_automate(left_path,right_path):
 
-                left_class_0, left_class_1 = preObj.integrate_automate(left_path_normalized)
-                right_class_0, right_class_1 = preObj.integrate_automate(right_path_normalized)
+                left_eye = preObj.integrate_automate(left_path_normalized)
+                right_eye = preObj.integrate_automate(right_path_normalized)
 
-                if left_class_0 == 0:
-                    left_eye = 0
-                elif left_class_0 == 1:
-                    left_eye = left_class_1+1
-
-                if right_class_0 == 0 :
-                    right_eye = 0
-                elif left_class_0 == 1:
-                    right_eye = right_class_1+1
 
                 del imgObj, preObj, Base_dir, right_path, left_path, left_path_normalized, left_file_name, right_path_normalized, right_file_name
 
