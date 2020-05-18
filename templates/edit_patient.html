@@ -27,9 +27,12 @@
                 <table>
 		            {{ pdh.as_table }}
 		        </table>
+                {% if flag %}
+                <h2>Note: if any one Retina photo is to be updated then please update both the retina images</h2>
                 <table>
 		            {{ dr.as_table }}
 		        </table>
+                {% endif %}
 		    <input type="submit" value="Submit" onclick="enable(event)"><button onclick="javascript:history.go(-1)">Cancel</button>
 		</form>
 	</div>

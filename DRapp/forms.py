@@ -11,7 +11,7 @@ class PersonalDetails(forms.Form):
     gender = ChoiceField(label='Gender', choices=(('M', 'Male'), ('F', 'Female')))
     blood = ChoiceField(label="Blood Group", choices=(('A+', 'A+'), ('A-', 'A-'), ('B+', 'B+'), ('B-', 'B-'), ('O+', 'O+'), ('O-', 'O-'), ('AB+', 'AB+'), ('AB-', 'AB-')))
     patient_photo = ImageField(label='Enter the patient photo', required=True, widget=FileInput(attrs={'id':'patient_photo','title': 'formats supported jpg,png and jpeg'}))
-    diabetic_type = ChoiceField(label='Diabetic Type', choices=(('type1', 'TYPE1'), ('type2', 'TYPE2')), required=True)
+    diabetic_type = ChoiceField(label='Diabetic Type', choices=(('TYPE1', 'TYPE1'), ('TYPE2', 'TYPE2')), required=True)
     sugar_Fasting_value = IntegerField(label='Sugar Fasting Value', required=True)
     sugar_Non_fasting_value = IntegerField(label='Sugar Non Fasting Value', required=True)
     time_duration = IntegerField(label="Duration of Diabeties", max_value=70, min_value=2, required=True)

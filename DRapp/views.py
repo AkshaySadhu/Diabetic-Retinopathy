@@ -6,7 +6,6 @@ from DRapp.forms import *
 from .models import *
 import random,shutil
 from django.contrib.auth import authenticate, login, logout
-from django.conf import settings
 import time
 from django.views.decorators.cache import never_cache
 
@@ -263,12 +262,14 @@ def edit_patient(request, id):
         data2 = DiabeticHistory.objects.get(patient_id_id=id)
         checking2 = DiabeticRetinopathy.objects.filter(patient_id_id=id)
         dr = DRForm()
+        flag = False
         if checking2.count() == 1:
             data3 = checking2.first()
             dr = DRForm(instance=data3)
+            flag = True
         ppd = PpdForm(instance=data1)
         pdh = PdhForm(instance=data2)
-        return render(request, 'edit_patient.html', {'ppd': ppd, 'pdh': pdh, 'dr': dr})
+        return render(request, 'edit_patient.html', {'ppd': ppd, 'pdh': pdh, 'dr': dr, 'flag': flag})
     else:
         return HttpResponse("<script>alert('patient not found'); window.history.back();</script>")
 
@@ -280,28 +281,52 @@ def update(request):
         files = request.FILES
         data1 = Patient.objects.filter(patient_id=data['patient_id'])
         data1.update(patient_age=data['patient_age'], address=data['address'], phone_no=data['phone_no'], )
-        data2 = DiabeticHistory.objects.filter(patient_id_id=data['patient_id'])
-        delete_dr = DiabeticRetinopathy.objects.filter(patient_id_id=data['patient_id'])
-        if delete_dr.count() == 1:
-            delete_dr.first().delete()
-        files['left_retina_photo'].name = str(data['patient_id']) + '_left_retina.' + files['left_retina_photo'].name.split('.')[-1]
-        files['right_retina_photo'].name = str(data['patient_id']) + '_right_retina.' + files['right_retina_photo'].name.split('.')[-1]
-        data3 = DiabeticRetinopathy(patient_id_id=data['patient_id'], left_retina_photo=files['left_retina_photo'],
-                                          right_retina_photo=files['right_retina_photo'])
-        try:
-            data2.update(diabetic_type=data['diabetic_type'], sugar_Fasting_value=data['sugar_Fasting_value'],
-                         sugar_Non_fasting_value=data['sugar_Non_fasting_value'], time_duration=data['time_duration'],
-                         diab_report=files['diab_report'])
-        except:
-            data2.update(diabetic_type=data['diabetic_type'], sugar_Fasting_value=data['sugar_Fasting_value'],
-                         sugar_Non_fasting_value=data['sugar_Non_fasting_value'], time_duration=data['time_duration'])
         for objects in data1:
             objects.save()
-        for objects in data2:
-            objects.save()
-        data3.save()
-        messages.success(request, 'Changes Updated Successfully')
-        return redirect("/predict/" + str(data['patient_id']))
+        data2 = DiabeticHistory.objects.get(patient_id_id=data['patient_id'])
+        data2.diabetic_type = data['diabetic_type']
+        data2.sugar_Fasting_value = data['sugar_Fasting_value']
+        data2.sugar_Non_fasting_value = data['sugar_Non_fasting_value']
+        data2.time_duration = data['time_duration']
+        data3 = DiabeticRetinopathy.objects.filter(patient_id_id=data['patient_id'])
+        try:
+            files['diab_report'].name = str(data['patient_id']) + '.' + files['diab_report'].name.split('.')[-1]
+            fullname = str(settings.BASE_DIR.replace('\\', '/')) + str("/media/") + str(data['patient_id']) + '/' + files['diab_report'].name
+            if os.path.exists(fullname):
+                os.remove(fullname)
+            data2.diab_report = files['diab_report']
+        except:
+            pass
+        data2.save()
+        try:
+            files['left_retina_photo'].name = str(data['patient_id']) + '_left_retina.' + files['left_retina_photo'].name.split('.')[-1]
+            fullname = str(settings.BASE_DIR.replace('\\', '/')) + str("/media/") + str(data['patient_id']) + '/' + files['left_retina_photo'].name
+            if os.path.exists(fullname):
+                os.remove(fullname)
+            files['right_retina_photo'].name = str(data['patient_id']) + '_right_retina.' + files['right_retina_photo'].name.split('.')[-1]
+            fullname = str(settings.BASE_DIR.replace('\\', '/')) + str("/media/") + str(data['patient_id']) + '/' + files['right_retina_photo'].name
+            if os.path.exists(fullname):
+                os.remove(fullname)
+            fullname1 = str(settings.BASE_DIR.replace('\\', '/')) + str("/media/") + str(data['patient_id']) + '/normalized_' + files['left_retina_photo'].name
+            if os.path.exists(fullname1):
+                os.remove(fullname1)
+            fullname2 = str(settings.BASE_DIR.replace('\\', '/')) + str("/media/") + str(data['patient_id']) + '/normalized_' + files['right_retina_photo'].name
+            if os.path.exists(fullname2):
+                os.remove(fullname2)
+            data3 = DiabeticRetinopathy.objects.get(patient_id_id=data['patient_id'])
+            data3.left_retina_photo = files['left_retina_photo']
+            data3.right_retina_photo = files['right_retina_photo']
+            data3.left_predicted_stage = ""
+            data3.right_predicted_stage = ""
+            data3.save()
+            messages.success(request, "PATIENT DETAILS UPDATED SUCCESSFULLY!")
+            return redirect('/predict/' + str(data['patient_id']))
+        except:
+            if data3.count() == 0:
+                messages.success(request, "PATIENT DETAILS UPDATED SUCCESSFULLY! \n PLEASE ADD RETINA PHOTOS")
+                return redirect('/addDR/' + str(data['patient_id']))
+        messages.success(request, 'PATIENT DETAILS UPDATED SUCCESSFULLY!')
+        return redirect("/view/" + str(data['patient_id']))
     else:
         return HttpResponse("<script>alert('Something Went Wrong'); window.history.back();</script>")
 
