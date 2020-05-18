@@ -300,10 +300,11 @@ def update(request):
         data2.save()
         try:
             files['left_retina_photo'].name = str(data['patient_id']) + '_left_retina.' + files['left_retina_photo'].name.split('.')[-1]
-            fullname = str(settings.BASE_DIR.replace('\\', '/')) + str("/media/") + str(data['patient_id']) + '/' + files['left_retina_photo'].name
+            files['right_retina_photo'].name = str(data['patient_id']) + '_right_retina.' + files['right_retina_photo'].name.split('.')[-1]
+            fullname = str(settings.BASE_DIR.replace('\\', '/')) + str("/media/") + str(data['patient_id']) + '/' + \
+                       files['left_retina_photo'].name
             if os.path.exists(fullname):
                 os.remove(fullname)
-            files['right_retina_photo'].name = str(data['patient_id']) + '_right_retina.' + files['right_retina_photo'].name.split('.')[-1]
             fullname = str(settings.BASE_DIR.replace('\\', '/')) + str("/media/") + str(data['patient_id']) + '/' + files['right_retina_photo'].name
             if os.path.exists(fullname):
                 os.remove(fullname)
